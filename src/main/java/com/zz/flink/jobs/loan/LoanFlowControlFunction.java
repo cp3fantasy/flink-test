@@ -82,8 +82,8 @@ public class LoanFlowControlFunction extends KeyedProcessFunction<String, Map, C
             String acctNo = (String) map.get("acctNo");
             String oppositeAcctNo = (String) map.get("oppositeAcctNo");
             String oppositeAcctName = (String) map.get("oppositeAcctName");
-            long timestamp = (long) map.get("timestamp");
-            state.put(timestamp, acctNo);
+//            long timestamp = (long) map.get("timestamp");
+            state.put(ctx.timestamp(), acctNo);
             ctx.timerService().registerEventTimeTimer(ctx.timestamp() + windowMillis);
             Set<String> acctNoSet = new HashSet<>();
 //            System.out.println("put "+ acctNo);

@@ -2,6 +2,7 @@ create table pv(
     pageId VARCHAR,
     userId VARCHAR,
     startTime BIGINT,
+    endTime BIGINT,
     ts as to_timestamp(from_unixtime(startTime))
 )with(
 'connector'='kafka',
@@ -11,6 +12,13 @@ create table pv(
 'format'='json',
 'properties.group.id'='flink.test.zz')
 
+create table gender(
+    userId VARCHAR,
+    gender VARCHAR
+)with(
+    'connector'='http'
+)
+
 create table pv_user_count(
     userId VARCHAR,
     cnt INT,
@@ -18,4 +26,10 @@ create table pv_user_count(
 ) with (
     'connector' = 'print'
 )
+
+create view pv_duration as
+select pageId,userId,ts,endTime - startTime as duration
+from pv
+
+
 

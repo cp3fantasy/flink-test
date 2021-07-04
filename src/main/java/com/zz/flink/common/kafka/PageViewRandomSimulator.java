@@ -34,12 +34,11 @@ public class PageViewRandomSimulator {
 
     public void start() {
         for (String user : users) {
-            browse(user);
+            browse(user,0);
         }
     }
 
-    private void browse(final String user) {
-        int delay = random.nextInt(1000);
+    private void browse(final String user,int delay) {
         timer.newTimeout(new TimerTask() {
             @Override
             public void run(Timeout timeout) throws Exception {
@@ -47,16 +46,17 @@ public class PageViewRandomSimulator {
                 pageView.setUserId(user);
                 pageView.setPageId(pageIds[random.nextInt(pageIds.length)]);
                 pageView.setStartTime(System.currentTimeMillis());
+                pageView.setEndTime(pageView.getStartTime()+new Random().nextInt(5000));
                 System.out.println(pageView);
                 producer.send(pageView);
-                browse(user);
+                browse(user,random.nextInt(5000));
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
 
     public static void main(String[] args) {
         PageViewKafkaProducer producer = new PageViewKafkaProducer();
-        PageViewRandomSimulator simulator = new PageViewRandomSimulator(5,10);
+        PageViewRandomSimulator simulator = new PageViewRandomSimulator(1,10);
         simulator.setProducer(producer);
         simulator.start();
     }

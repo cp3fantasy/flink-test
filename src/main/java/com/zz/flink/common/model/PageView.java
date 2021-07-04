@@ -10,6 +10,8 @@ public class PageView {
 
     private long startTime;
 
+    private long endTime;
+
     public String getPageId() {
         return pageId;
     }
@@ -34,12 +36,21 @@ public class PageView {
         this.startTime = startTime;
     }
 
+    public long getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(long endTime) {
+        this.endTime = endTime;
+    }
+
     @Override
     public String toString() {
         return "PageView{" +
                 "pageId='" + pageId + '\'' +
                 ", userId='" + userId + '\'' +
-                ", startTime=" + TimeUtil.format(startTime) +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
                 '}';
     }
 }

@@ -7,6 +7,7 @@ import io.netty.util.Timeout;
 import io.netty.util.Timer;
 import io.netty.util.TimerTask;
 
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class PageViewFixedSpeedSimulator {
@@ -42,9 +43,10 @@ public class PageViewFixedSpeedSimulator {
                     pageView.setPageId(pageIds[count % pageIds.length]);
                     count++;
                     pageView.setStartTime(System.currentTimeMillis());
+                    pageView.setEndTime(pageView.getStartTime()+new Random().nextInt(3000));
                     System.out.println(pageView);
                     producer.send(pageView);
-                    timer.newTimeout(this, 1000, TimeUnit.MILLISECONDS);
+                    timer.newTimeout(this, 3000, TimeUnit.MILLISECONDS);
                 }
             };
             timer.newTimeout(task, 1000, TimeUnit.MILLISECONDS);

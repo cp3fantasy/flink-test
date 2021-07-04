@@ -5,9 +5,9 @@ import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.TimeCharacteristic;
+import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
-import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.rocketmq.flink.RocketMQConfig;
 import org.apache.rocketmq.flink.RocketMQSink;
@@ -30,7 +30,18 @@ public class LoanFlowControl {
      *
      * @return properties
      */
-    private static Properties getConsumerProps() {
+    private static Properties getLoanConsumerProps() {
+        Properties consumerProps = new Properties();
+        consumerProps.setProperty(
+                RocketMQConfig.NAME_SERVER_ADDR,
+                "localhost:9876");
+        consumerProps.setProperty(RocketMQConfig.CONSUMER_GROUP, "loan_flow_control");
+        consumerProps.setProperty(RocketMQConfig.CONSUMER_TOPIC, "IDATA-EPLUS_LOAN_LIMIT_CHANGE");
+        consumerProps.setProperty(RocketMQConfig.CONSUMER_OFFSET_RESET_TO, CONSUMER_OFFSET_LATEST);
+        return consumerProps;
+    }
+
+    private static Properties getControlConsumerProps() {
         Properties consumerProps = new Properties();
         consumerProps.setProperty(
                 RocketMQConfig.NAME_SERVER_ADDR,
@@ -74,30 +85,30 @@ public class LoanFlowControl {
         // set mode to exactly-once (this is the default)
 //        env.getCheckpointConfig().setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE);
         // checkpoints have to complete within one minute, or are discarded
-        env.getCheckpointConfig().setCheckpointTimeout(60000);
+//        env.getCheckpointConfig().setCheckpointTimeout(60000);
         // make sure 500 ms of progress happen between checkpoints
-        env.getCheckpointConfig().setMinPauseBetweenCheckpoints(500);
+//        env.getCheckpointConfig().setMinPauseBetweenCheckpoints(500);
         // allow only one checkpoint to be in progress at the same time
         env.getCheckpointConfig().setMaxConcurrentCheckpoints(1);
         // enable externalized checkpoints which are retained after job cancellation
-        env.getCheckpointConfig()
-                .enableExternalizedCheckpoints(
-                        CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
-
-        Properties consumerProps = getConsumerProps();
-        Properties producerProps = getProducerProps();
+//        env.getCheckpointConfig()
+//                .enableExternalizedCheckpoints(
+//                        CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
 
         JsonMapDeserializationSchema schema = new JsonMapDeserializationSchema();
 
-        DataStreamSource<Map> source =
-                env.addSource(new RocketMQSource<>(schema, consumerProps)).setParallelism(2);
-//        source.print();
+        DataStreamSource<Map> loanSource =
+                env.addSource(new RocketMQSource<>(schema, getLoanConsumerProps()));
+        DataStreamSource<Map> controlSource =
+                env.addSource(new RocketMQSource<>(schema, getControlConsumerProps()));
+        DataStream<Map> source = loanSource.union(controlSource);
+        source.print();
         WatermarkStrategy<Map> strategy = WatermarkStrategy.<Map>forBoundedOutOfOrderness(Duration.ofSeconds(5))
-                .withTimestampAssigner(new SerializableTimestampAssigner<Map>(){
+                .withTimestampAssigner(new SerializableTimestampAssigner<Map>() {
                     @Override
                     public long extractTimestamp(Map map, long recordTimestamp) {
                         String timestamp = (String) map.get("timestamp");
-                        if(timestamp !=null){
+                        if (timestamp != null) {
                             try {
                                 return new SimpleDateFormat("yyyyMMddHHmmssSSS").parse(timestamp).getTime();
                             } catch (ParseException e) {
@@ -118,8 +129,8 @@ public class LoanFlowControl {
             }
         }).process(new LoanFlowControlFunction());
         controlStream.print();
-        controlStream.process(new SinkMapFunction("IDATA-EPLUS_RCPM_EVENT","black_list_ctrl"))
-        .addSink(new RocketMQSink<>(producerProps));
+        controlStream.process(new SinkMapFunction("IDATA-EPLUS_RCPM_EVENT", "black_list_ctrl"))
+                .addSink(new RocketMQSink<>(getProducerProps()));
 //        source.process(new SourceMapFunction())
 //                .process(new SinkMapFunction("FLINK_SINK", "*"))
 //                .addSink(

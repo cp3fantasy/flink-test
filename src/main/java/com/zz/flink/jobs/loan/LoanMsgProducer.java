@@ -37,7 +37,7 @@ public class LoanMsgProducer {
     // Producer config
     private static final String NAME_SERVER_ADDR = "localhost:9876";
     private static final String PRODUCER_GROUP = "GID_SIMPLE_PRODUCER";
-    private static final String TOPIC = "BLOAN-RCPM_EVENT";
+    private static final String TOPIC = "IDATA-EPLUS_LOAN_LIMIT_CHANGE";
     private static final String LOAN_TAGS = "loan";
 
     private static SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmssSSS");
