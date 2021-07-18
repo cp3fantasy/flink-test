@@ -5,7 +5,7 @@ import org.apache.flink.table.api.EnvironmentSettings;
 import org.apache.flink.table.api.TableResult;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 
-public class PvTableTest {
+public class KafkaSinkTest {
 
     public static void main(String[] args) {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -25,16 +25,26 @@ public class PvTableTest {
                 "'format'='json',\n" +
                 "'properties.group.id'='flink.test.zz')\n";
         tEnv.executeSql(createTable);
-        createTable = "create table pv_user_count(\n" +
-                "    userId VARCHAR,\n" +
+        String createView = "create view page_user_count as\n" +
+                "select pageId,userId,count(1) as cnt from pv group by pageId,userId";
+        tEnv.executeSql(createView);
+        createTable = "create table page_count(\n" +
+                "    pageId VARCHAR,\n" +
                 "    cnt BIGINT\n" +
-//                "    ts timestamp(3)\n" +
                 ") with (\n" +
                 "    'connector' = 'print'\n" +
                 ")";
         tEnv.executeSql(createTable);
-        TableResult result = tEnv.executeSql("insert into pv_user_count select userId,count(1) from pv group by userId");
-
+        TableResult result = tEnv.executeSql("insert into page_count select pageId,count(1) from page_user_count group by pageId");
+        result.print();
+        createTable = "create table user_count(\n" +
+                "    userId VARCHAR,\n" +
+                "    cnt BIGINT\n" +
+                ") with (\n" +
+                "    'connector' = 'print'\n" +
+                ")";
+        tEnv.executeSql(createTable);
+        result = tEnv.executeSql("insert into user_count select userId,count(1) from page_user_count group by userId");
         result.print();
     }
 }

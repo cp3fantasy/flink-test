@@ -9,8 +9,11 @@ import io.netty.util.TimerTask;
 
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class PageViewRandomSimulator {
+
+    private AtomicInteger seqNo = new AtomicInteger();
 
     private String[] users;
 
@@ -43,6 +46,7 @@ public class PageViewRandomSimulator {
             @Override
             public void run(Timeout timeout) throws Exception {
                 PageView pageView = new PageView();
+                pageView.setSeqNo(String.valueOf(seqNo.incrementAndGet()));
                 pageView.setUserId(user);
                 pageView.setPageId(pageIds[random.nextInt(pageIds.length)]);
                 pageView.setStartTime(System.currentTimeMillis());
@@ -56,7 +60,7 @@ public class PageViewRandomSimulator {
 
     public static void main(String[] args) {
         PageViewKafkaProducer producer = new PageViewKafkaProducer();
-        PageViewRandomSimulator simulator = new PageViewRandomSimulator(1,10);
+        PageViewRandomSimulator simulator = new PageViewRandomSimulator(3,10);
         simulator.setProducer(producer);
         simulator.start();
     }

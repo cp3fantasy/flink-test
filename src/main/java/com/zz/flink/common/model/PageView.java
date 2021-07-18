@@ -4,6 +4,8 @@ import com.zz.flink.common.util.TimeUtil;
 
 public class PageView {
 
+    private String seqNo;
+
     private String pageId;
 
     private String userId;
@@ -11,6 +13,14 @@ public class PageView {
     private long startTime;
 
     private long endTime;
+
+    public String getSeqNo() {
+        return seqNo;
+    }
+
+    public void setSeqNo(String seqNo) {
+        this.seqNo = seqNo;
+    }
 
     public String getPageId() {
         return pageId;
