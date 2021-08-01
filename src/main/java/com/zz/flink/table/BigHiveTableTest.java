@@ -46,25 +46,11 @@ public class BigHiveTableTest {
         tEnv.getConfig().setSqlDialect(SqlDialect.DEFAULT);
         String bigSelect = createBigSelect("big_source", "myhive.flink.big11", 11);
 //        System.out.println(bigSelect);
-//        TableResult result = tEnv.executeSql(bigSelect);
-        tEnv.sqlUpdate(bigSelect);
-//        result.print();
+        TableResult result = tEnv.executeSql(bigSelect);
+//        tEnv.sqlUpdate(bigSelect);
+        result.print();
 //        tEnv.execute("hive");
-        Class cls = TableEnvironmentImpl.class;
-        Field f = cls.getDeclaredField("execEnv");
-        f.setAccessible(true);
-        Object o = f.get(tEnv);
-        Executor executor = (Executor) o;
-        Method method = cls.getDeclaredMethod("translateAndClearBuffer");
-        method.setAccessible(true);
-        List<Transformation<?>> transformations = (List<Transformation<?>>) method.invoke(tEnv);
-        f = cls.getDeclaredField("tableConfig");
-        f.setAccessible(true);
-//        TableConfig tableConfig = (TableConfig) f.get(tEnv);
-        Pipeline pipeline = executor.createPipeline(transformations, tEnv.getConfig(), "test");
-        JobGraph jobGraph = FlinkPipelineTranslationUtil
-                .getJobGraph(pipeline, tEnv.getConfig().getConfiguration(), 1);
-        System.in.read();
+
     }
 
     private static String createBigSelect(String source, String sink, int fieldCount) {

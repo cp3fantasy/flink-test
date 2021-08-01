@@ -32,7 +32,9 @@ com/zz/flink/table/DerivedColumnTest.class
 org/apache/rocketmq/flink/common/util/RetryUtil.class
 com/zz/flink/table/HttpPostTableFuncTest.class
 com/zz/es/EsRestClientTest.class
+com/zz/flink/table/cdc/CdcTest1.class
 com/zz/flink/jobs/loan/ControlMsgProducer.class
+com/zz/flink/table/FileSystemTest.class
 com/zz/flink/table/udf/JsonUdtf1.class
 com/zz/flink/streaming/pv/PvProcessFunctionTest$1.class
 com/zz/flink/table/DistinctCountFunction.class
@@ -48,7 +50,6 @@ org/apache/rocketmq/flink/common/util/MetricUtils.class
 com/zz/flink/streaming/pv/PvStreamTest2$3.class
 com/zz/flink/streaming/pv/PvProcessFunctionTest$2.class
 com/zz/flink/common/kafka/BigMessageProducer.class
-com/zz/flink/table/HiveTableTest.class
 com/zz/flink/table/sink/FailTableSink.class
 com/zz/flink/table/LargeSqlTest2.class
 org/apache/rocketmq/flink/common/serialization/SimpleKeyValueDeserializationSchema.class
@@ -60,7 +61,10 @@ org/apache/rocketmq/flink/RocketMQSource$1.class
 org/apache/rocketmq/flink/common/serialization/KeyValueDeserializationSchema.class
 com/zz/flink/table/StreamSQLExample$CountResult.class
 com/zz/flink/table/udf/GetGenderFuncInternal.class
+com/zz/flink/table/BigHiveTableTest3.class
 org/apache/rocketmq/flink/common/selector/TopicSelector.class
+com/zz/flink/table/RestartTest.class
+com/zz/flink/table/cdc/CdcMessageProducer.class
 org/apache/rocketmq/flink/RocketMQSource.class
 com/zz/flink/jobs/loan/ControlMsg.class
 com/zz/flink/common/kafka/PageViewRandomSimulator$1.class
@@ -80,11 +84,14 @@ com/zz/flink/table/ProcTimeTest.class
 org/apache/rocketmq/flink/RunningChecker.class
 org/apache/rocketmq/flink/common/serialization/ForwardMessageExtDeserialization.class
 com/zz/flink/table/PvTableTest7.class
+com/zz/flink/table/BigHiveTableTest.class
 com/zz/flink/table/udf/InCodeTableFunction$3.class
 com/zz/flink/jobs/loan/LoanFlowControl.class
 com/zz/flink/table/udf/HttpPostTableFunc.class
 org/apache/rocketmq/flink/common/serialization/JsonMapDeserializationSchema.class
 com/zz/flink/jobs/loan/LoanFlowControl$1.class
+com/zz/flink/table/PartitionedHiveTableTest.class
+com/zz/flink/table/CountCountTest.class
 com/zz/flink/streaming/pv/PvStreamTest2.class
 org/apache/rocketmq/flink/common/serialization/SimpleKeyValueSerializationSchema.class
 org/apache/rocketmq/flink/common/watermark/WaterMarkForAll.class
@@ -100,6 +107,7 @@ com/zz/flink/jobs/loan/LoanMsg.class
 com/zz/flink/table/udf/InCodeTableFunction.class
 org/apache/rocketmq/flink/common/watermark/BoundedOutOfOrdernessGeneratorPerQueue.class
 org/apache/rocketmq/flink/RocketMQSink$1.class
+com/zz/flink/table/KafkaSinkTest.class
 com/zz/flink/table/sink/FailTableSinkFactory.class
 com/zz/flink/table/DistinctCountAccumulator.class
 com/zz/flink/table/StreamSQLExample$Order.class
@@ -108,9 +116,11 @@ com/zz/flink/common/kafka/PageViewFixedSpeedSimulator.class
 com/zz/flink/jobs/loan/LoanFlowControl$2.class
 com/zz/flink/table/udf/InCodeTableFunction$1.class
 org/apache/rocketmq/flink/common/selector/DefaultTopicSelector.class
+com/zz/flink/table/BigHiveTableTest2.class
 com/zz/flink/common/kafka/BigMessageProducer$1.class
 com/zz/flink/streaming/pv/PvStreamMultiDimensionTest2$4.class
 com/zz/flink/table/PvTableTest2.class
 org/apache/rocketmq/flink/common/serialization/SimpleTupleDeserializationSchema.class
+com/zz/flink/table/cdc/CdcMessageProducer$1.class
 com/zz/flink/streaming/pv/PvSlidingWindowTest.class
 com/zz/flink/streaming/pv/PvSlidingWindowTest$2.class

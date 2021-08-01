@@ -43,10 +43,10 @@ public class PageViewFixedSpeedSimulator {
                     pageView.setPageId(pageIds[count % pageIds.length]);
                     count++;
                     pageView.setStartTime(System.currentTimeMillis());
-                    pageView.setEndTime(pageView.getStartTime()+new Random().nextInt(3000));
+                    pageView.setEndTime(pageView.getStartTime()+new Random().nextInt(1000));
                     System.out.println(pageView);
                     producer.send(pageView);
-                    timer.newTimeout(this, 3000, TimeUnit.MILLISECONDS);
+                    timer.newTimeout(this, 1000, TimeUnit.MILLISECONDS);
                 }
             };
             timer.newTimeout(task, 1000, TimeUnit.MILLISECONDS);
