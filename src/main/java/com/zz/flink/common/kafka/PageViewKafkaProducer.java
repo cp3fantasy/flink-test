@@ -1,12 +1,13 @@
 package com.zz.flink.common.kafka;
 
 import com.zz.flink.common.model.PageView;
+import com.zz.flink.common.simulator.PageViewHandler;
 import org.apache.kafka.clients.producer.*;
 
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class PageViewKafkaProducer {
+public class PageViewKafkaProducer implements PageViewHandler {
 
     private Producer<String, PageView> producer;
 
@@ -44,4 +45,8 @@ public class PageViewKafkaProducer {
     }
 
 
+    @Override
+    public void handle(PageView pageView) {
+        send(pageView);
+    }
 }
