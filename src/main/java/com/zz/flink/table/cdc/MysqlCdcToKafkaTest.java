@@ -37,7 +37,8 @@ public class MysqlCdcToKafkaTest {
                 "    pageId STRING,\n" +
                 "    userId STRING,\n" +
                 "    startTime TIMESTAMP(3),\n" +
-                "    endTime TIMESTAMP(3)\n" +
+                "    endTime TIMESTAMP(3),\n" +
+                "    duration BIGINT\n" +
                 ")with(\n" +
                 " 'connector' = 'kafka',\n" +
                 " 'topic' = 'pv_cdc',\n" +
@@ -47,7 +48,7 @@ public class MysqlCdcToKafkaTest {
                 ")";
         System.out.println(createTable);
         tEnv.executeSql(createTable);
-        TableResult result = tEnv.executeSql("insert into pv select userId,pageId,startTime,endTime from pv_src");
+        TableResult result = tEnv.executeSql("insert into pv select userId,pageId,startTime,endTime,timestampDiff(SECOND,startTime,endTime) from pv_src");
         result.print();
     }
 }

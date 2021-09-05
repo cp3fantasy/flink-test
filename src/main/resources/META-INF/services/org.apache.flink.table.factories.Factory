@@ -15,4 +15,6 @@
 
 com.zz.flink.table.sink.FailTableSinkFactory
 com.zz.flink.table.source.HttpLookupTableSourceFactory
+org.apache.flink.streaming.connectors.kafka.table.KafkaDynamicTableFactory
+org.apache.flink.streaming.connectors.kafka.table.UpsertKafkaDynamicTableFactory
 

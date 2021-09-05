@@ -6,14 +6,13 @@ import org.apache.flink.table.api.EnvironmentSettings;
 import org.apache.flink.table.api.TableResult;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 
-public class MysqlCdcPrintTest {
+public class MysqlCdcCountPrintTest {
 
     public static void main(String[] args) {
 //        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         Configuration config = new Configuration();
         StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(config);
         env.enableCheckpointing(10000);
-        env.setParallelism(2);
         EnvironmentSettings settings =
                 EnvironmentSettings.newInstance().inStreamingMode().useBlinkPlanner().build();
         StreamTableEnvironment tEnv = StreamTableEnvironment.create(env, settings);
@@ -31,23 +30,18 @@ public class MysqlCdcPrintTest {
                 "'username' = 'flink',\n" +
                 "'password' = 'flink',\n" +
                 "'database-name' = 'flink_test',\n" +
-                "'table-name' = 'pv',\n" +
-                "'scan.incremental.snapshot.enabled' = 'true',\n" +
-                "'scan.incremental.snapshot.chunk.size' = '10'\n" +
-                ")";
+                "'table-name' = 'pv')\n";
         System.out.println(createTable);
         tEnv.executeSql(createTable);
-        createTable = "create table pv(\n" +
+        createTable = "create table page_count(\n" +
                 "    pageId STRING,\n" +
-                "    userId STRING,\n" +
-                "    startTime TIMESTAMP(3),\n" +
-                "    endTime TIMESTAMP(3)\n" +
+                "    `count` BIGINT\n" +
                 ")with(\n" +
                 " 'connector' = 'print'\n" +
                 ")";
         System.out.println(createTable);
         tEnv.executeSql(createTable);
-        TableResult result = tEnv.executeSql("insert into pv select userId,pageId,startTime,endTime from pv_src");
+        TableResult result = tEnv.executeSql("insert into page_count select pageId,count(1) from pv_src group by pageId");
         result.print();
     }
 }
