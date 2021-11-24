@@ -1,7 +1,5 @@
 package com.zz.flink.common.model;
 
-import com.zz.flink.common.util.TimeUtil;
-
 public class PageView {
 
     private String seqNo;
