@@ -19,7 +19,9 @@ public class CdcMessageProducer {
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         Producer<String, String> producer = new KafkaProducer<>(props);
         for (int i = 0; i < 100; i++) {
-            ProducerRecord<String, String> record = new ProducerRecord("products_binlog", buildCdcMsg(i));
+            String msg = buildCdcMsg(i);
+//            System.out.println(msg);
+            ProducerRecord<String, String> record = new ProducerRecord("products_binlog", msg);
             final int j = i;
             producer.send(record, new Callback() {
                 @Override
@@ -36,6 +38,7 @@ public class CdcMessageProducer {
     }
 
     private static String buildCdcMsg(int i) {
+        String table = "table" + i % 2;
         String format = "{\n" +
                 "  \"before\": {\n" +
                 "    \"id\": %d,\n" +
@@ -49,12 +52,12 @@ public class CdcMessageProducer {
                 "    \"description\": \"Big 2-wheel scooter\",\n" +
                 "    \"weight\": 5.15\n" +
                 "  },\n" +
-                "  \"source\": {},\n" +
+                "  \"table_name\": \"%s\",\n" +
                 "  \"op\": \"u\",\n" +
                 "  \"ts_ms\": %d,\n" +
                 "  \"transaction\": null\n" +
                 "}";
-        return String.format(format, i, i, System.currentTimeMillis());
+        return String.format(format, i, i, table, System.currentTimeMillis());
     }
 
 
