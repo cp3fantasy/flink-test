@@ -1,14 +1,16 @@
 package com.zz.flink.cdc;
 
+import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.EnvironmentSettings;
 import org.apache.flink.table.api.TableResult;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 
-public class UserCdcTest {
+public class UserCdcAggTest {
 
     public static void main(String[] args) {
-        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        Configuration conf = new Configuration();
+        StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(conf);
         env.enableCheckpointing(10000);
         env.setParallelism(2);
         EnvironmentSettings settings =
@@ -34,19 +36,16 @@ public class UserCdcTest {
                 ")";
         System.out.println(createTable);
         tEnv.executeSql(createTable);
-        createTable = "create table user_info(\n" +
-                "id INT,\n" +
-                "userId STRING,\n" +
-                "level INT,\n" +
+        createTable = "create table user_stat(\n" +
                 "amount DECIMAL(38,10),\n" +
-                "update_time TIMESTAMP(3)\n" +
-//                "PRIMARY KEY(id) NOT ENFORCED \n" +
+                "level INT\n" +
+//                "update_time TIMESTAMP(3)\n" +
                 ")with(\n" +
                 " 'connector' = 'print'\n" +
                 ")";
         System.out.println(createTable);
         tEnv.executeSql(createTable);
-        TableResult result = tEnv.executeSql("insert into user_info select id,userId,level,amount,update_time from user_src");
+        TableResult result = tEnv.executeSql("insert into user_stat select sum(amount),level from user_src group by level");
         result.print();
     }
 }

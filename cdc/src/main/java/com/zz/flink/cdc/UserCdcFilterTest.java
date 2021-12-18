@@ -5,7 +5,7 @@ import org.apache.flink.table.api.EnvironmentSettings;
 import org.apache.flink.table.api.TableResult;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 
-public class UserCdcTest {
+public class UserCdcFilterTest {
 
     public static void main(String[] args) {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -40,13 +40,12 @@ public class UserCdcTest {
                 "level INT,\n" +
                 "amount DECIMAL(38,10),\n" +
                 "update_time TIMESTAMP(3)\n" +
-//                "PRIMARY KEY(id) NOT ENFORCED \n" +
                 ")with(\n" +
                 " 'connector' = 'print'\n" +
                 ")";
         System.out.println(createTable);
         tEnv.executeSql(createTable);
-        TableResult result = tEnv.executeSql("insert into user_info select id,userId,level,amount,update_time from user_src");
+        TableResult result = tEnv.executeSql("insert into user_info select id,userId,level,amount,update_time from user_src where level>1");
         result.print();
     }
 }
