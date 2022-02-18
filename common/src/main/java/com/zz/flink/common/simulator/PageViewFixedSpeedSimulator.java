@@ -9,8 +9,11 @@ import io.netty.util.TimerTask;
 
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class PageViewFixedSpeedSimulator {
+
+    private AtomicInteger seqNo = new AtomicInteger();
 
     private int limit;
 
@@ -49,6 +52,7 @@ public class PageViewFixedSpeedSimulator {
             @Override
             public void run(Timeout timeout) throws Exception {
                 PageView pageView = new PageView();
+                pageView.setSeqNo(String.valueOf(seqNo.incrementAndGet()));
                 pageView.setUserId(user);
                 pageView.setPageId(pageIds[count % pageIds.length]);
                 pageView.setStartTime(System.currentTimeMillis());
@@ -62,7 +66,7 @@ public class PageViewFixedSpeedSimulator {
                 }
             }
         };
-        timer.newTimeout(task, 1000, TimeUnit.MILLISECONDS);
+        timer.newTimeout(task, 1, TimeUnit.MILLISECONDS);
     }
 
     public static void main(String[] args) {

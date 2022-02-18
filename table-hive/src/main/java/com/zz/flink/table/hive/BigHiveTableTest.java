@@ -1,23 +1,11 @@
 package com.zz.flink.table.hive;
 
-import org.apache.flink.api.dag.Pipeline;
-import org.apache.flink.api.dag.Transformation;
-import org.apache.flink.client.FlinkPipelineTranslationUtil;
-import org.apache.flink.runtime.jobgraph.JobGraph;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.EnvironmentSettings;
 import org.apache.flink.table.api.SqlDialect;
-import org.apache.flink.table.api.TableConfig;
 import org.apache.flink.table.api.TableResult;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
-import org.apache.flink.table.api.internal.TableEnvironmentImpl;
 import org.apache.flink.table.catalog.hive.HiveCatalog;
-import org.apache.flink.table.delegation.Executor;
-
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.List;
 
 public class BigHiveTableTest {
 

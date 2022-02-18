@@ -55,10 +55,12 @@ public class PageView {
     @Override
     public String toString() {
         return "PageView{" +
-                "pageId='" + pageId + '\'' +
+                "seqNo='" + seqNo + '\'' +
+                ", pageId='" + pageId + '\'' +
                 ", userId='" + userId + '\'' +
                 ", startTime=" + startTime +
                 ", endTime=" + endTime +
                 '}';
     }
+
 }

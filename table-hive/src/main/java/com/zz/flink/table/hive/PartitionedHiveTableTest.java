@@ -35,7 +35,7 @@ public class PartitionedHiveTableTest {
         tEnv.executeSql(createTable);
         tEnv.useCatalog("myhive");
         tEnv.getConfig().setSqlDialect(SqlDialect.HIVE);
-        createTable = "create table pv2(\n" +
+        createTable = "create table pv_sink(\n" +
                 "    pageId VARCHAR(20),\n" +
                 "    userId VARCHAR(20),\n" +
                 "    startTime BIGINT,\n" +
@@ -48,7 +48,7 @@ public class PartitionedHiveTableTest {
         tEnv.executeSql(createTable);
         tEnv.useCatalog("default_catalog");
         tEnv.getConfig().setSqlDialect(SqlDialect.DEFAULT);
-        TableResult result = tEnv.executeSql("insert into myhive.flink.pv2 select pageId,userId,startTime,DATE_FORMAT(ts,'yyyy-MM-dd') from pv_src");
+        TableResult result = tEnv.executeSql("insert into myhive.flink.pv_sink select pageId,userId,startTime,DATE_FORMAT(ts,'yyyy-MM-dd') from pv_src");
         result.print();
     }
 
