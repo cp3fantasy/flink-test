@@ -66,7 +66,7 @@ public class PageViewFixedSpeedSimulator {
                 }
             }
         };
-        timer.newTimeout(task, 1, TimeUnit.MILLISECONDS);
+        timer.newTimeout(task, 1000, TimeUnit.MILLISECONDS);
     }
 
     public static void main(String[] args) {
