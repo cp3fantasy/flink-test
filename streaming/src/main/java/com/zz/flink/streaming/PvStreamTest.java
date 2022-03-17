@@ -63,7 +63,7 @@ public class PvStreamTest {
 				return new Tuple2<>(pageView.getUserId(),1);
 			}
 		}).keyBy(0).sum(1)
-				.print().setParallelism(1);
+				.print().setParallelism(4);
 		env.execute("kafkaTest");
 	}
 }

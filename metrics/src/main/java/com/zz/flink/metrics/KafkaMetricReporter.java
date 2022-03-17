@@ -1,11 +1,11 @@
 package com.zz.flink.metrics;
 
-import org.apache.flink.annotation.VisibleForTesting;
 import org.apache.flink.metrics.*;
 import org.apache.flink.metrics.reporter.MetricReporter;
 import org.apache.flink.metrics.reporter.Scheduled;
 import org.apache.flink.runtime.metrics.groups.AbstractMetricGroup;
 import org.apache.flink.runtime.metrics.groups.FrontMetricGroup;
+import org.apache.flink.util.StringUtils;
 import org.apache.kafka.clients.producer.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,14 +18,13 @@ public class KafkaMetricReporter implements MetricReporter, Scheduled {
 
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
-    @VisibleForTesting
     static final char SCOPE_SEPARATOR = '_';
-    private static final String POINT_DELIMITER = "\n";
+
+    private transient String topic;
 
     private transient Producer<String, String> producer;
 
-    private static final SimpleDateFormat timeFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
-
+    private static final SimpleDateFormat timeFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
     private static final CharacterFilter CHARACTER_FILTER =
             new CharacterFilter() {
@@ -45,13 +44,15 @@ public class KafkaMetricReporter implements MetricReporter, Scheduled {
     @Override
     public void open(MetricConfig config) {
         Properties props = new Properties();
-        props.put("bootstrap.servers", "localhost:9092");
+        String servers = config.getString("servers", "localhost:9092");
+        topic = config.getString("topic", "flink_metrics");
+        props.put("bootstrap.servers", servers);
 //        props.put("acks", "all");
         props.put("delivery.timeout.ms", 5000);
         props.put("request.timeout.ms", 2000);
         props.put("batch.size", 16384);
         props.put("linger.ms", 10);
-        props.put("buffer.memory", 33554432);
+        props.put("buffer.memory", 1024 * 1024);
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         producer = new KafkaProducer<>(props);
@@ -59,7 +60,7 @@ public class KafkaMetricReporter implements MetricReporter, Scheduled {
 
     @Override
     public void close() {
-
+        producer.close();
     }
 
     @Override
@@ -109,28 +110,28 @@ public class KafkaMetricReporter implements MetricReporter, Scheduled {
     @Override
     public void report() {
         String time = timeFormat.format(new Date());
-        System.out.println("report start:" + time);
-//        System.out.println(gauges);
-//        System.out.println(counters);
-//        System.out.println(histograms);
-//        System.out.println(meters);
+        log.info("report start at {}", time);
         try {
+            log.info("report gauges:{}", gauges.size());
             for (Map.Entry<Gauge<?>, MetricInfo> entry : gauges.entrySet()) {
                 sendMetric(entry.getValue(), time, entry.getKey().getValue());
             }
+            log.info("report counters:{}", counters.size());
             for (Map.Entry<Counter, MetricInfo> entry : counters.entrySet()) {
                 sendMetric(entry.getValue(), time, entry.getKey().getCount());
             }
+            log.info("report meters:{}", meters.size());
             for (Map.Entry<Meter, MetricInfo> entry : meters.entrySet()) {
                 sendMetric(entry.getValue(), time, entry.getKey().getRate());
             }
+            log.info("report histograms:{}", histograms.size());
             for (Map.Entry<Histogram, MetricInfo> entry : histograms.entrySet()) {
                 sendMetric(entry.getValue(), time, getHistogram(entry.getKey()));
             }
         } catch (ConcurrentModificationException e) {
-            report();
+            log.warn("report error ", e);
         }
-        System.out.println("report end");
+        log.info("report end at {}", timeFormat.format(new Date()));
     }
 
     private Object getHistogram(Histogram histogram) {
@@ -152,12 +153,12 @@ public class KafkaMetricReporter implements MetricReporter, Scheduled {
         metricInfo.setTime(time);
         metricInfo.setValue(value);
         String metricInfoString = metricInfo.toString();
-        ProducerRecord<String, String> record = new ProducerRecord<>("flink_metrics", metricInfoString);
+        ProducerRecord<String, String> record = new ProducerRecord<>(topic, metricInfoString);
         producer.send(record, new Callback() {
             @Override
             public void onCompletion(RecordMetadata metadata, Exception exception) {
                 if (exception != null) {
-                    exception.printStackTrace();
+                    log.error("kafka send error", exception);
                 }
             }
         });
@@ -165,8 +166,7 @@ public class KafkaMetricReporter implements MetricReporter, Scheduled {
 
     private static String getScopedName(String metricName, MetricGroup group) {
         return ((FrontMetricGroup<AbstractMetricGroup<?>>) group)
-                .getLogicalScope(CHARACTER_FILTER, SCOPE_SEPARATOR);
-//        return group.getMetricIdentifier(metricName, CHARACTER_FILTER);
+                .getLogicalScope(CHARACTER_FILTER, SCOPE_SEPARATOR) + SCOPE_SEPARATOR + metricName;
     }
 
     private static Map<String, String> getTags(MetricGroup group) {
@@ -174,7 +174,10 @@ public class KafkaMetricReporter implements MetricReporter, Scheduled {
         Map<String, String> tags = new HashMap<>();
         for (Map.Entry<String, String> variable : group.getAllVariables().entrySet()) {
             String name = variable.getKey();
-            tags.put(name.substring(1, name.length() - 1), variable.getValue());
+            String tagValue = variable.getValue();
+            if (!StringUtils.isNullOrWhitespaceOnly(tagValue)) {
+                tags.put(name.substring(1, name.length() - 1), variable.getValue());
+            }
         }
         return tags;
     }
