@@ -1,4 +1,4 @@
-package com.zz.flink.metrics;
+package com.paic.flink.metrics;
 
 import org.apache.flink.metrics.*;
 import org.apache.flink.metrics.reporter.MetricReporter;
@@ -18,21 +18,28 @@ public class KafkaMetricReporter implements MetricReporter, Scheduled {
 
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
-    static final char SCOPE_SEPARATOR = '_';
+    private final String servers;
 
-    private transient String topic;
+    private final String topic;
+
+    private final Map<String, String> groupingKey;
+
 
     private transient Producer<String, String> producer;
 
     private static final SimpleDateFormat timeFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
+    private static final Pattern UNALLOWED_CHAR_PATTERN = Pattern.compile("[^a-zA-Z0-9:_]");
+
+    static final char SCOPE_SEPARATOR = '_';
+
+    private static final String SCOPE_PREFIX = "flink" + SCOPE_SEPARATOR;
+
     private static final CharacterFilter CHARACTER_FILTER =
             new CharacterFilter() {
-                private final Pattern notAllowedCharacters = Pattern.compile("[^a-zA-Z0-9:_]");
-
                 @Override
                 public String filterCharacters(String input) {
-                    return notAllowedCharacters.matcher(input).replaceAll("_");
+                    return UNALLOWED_CHAR_PATTERN.matcher(input).replaceAll("_");
                 }
             };
 
@@ -41,11 +48,17 @@ public class KafkaMetricReporter implements MetricReporter, Scheduled {
     protected final Map<Histogram, MetricInfo> histograms = new HashMap<>();
     protected final Map<Meter, MetricInfo> meters = new HashMap<>();
 
+    public KafkaMetricReporter(String servers, String topic, Map<String, String> groupingKey) {
+        this.servers = servers;
+        this.topic = topic;
+        this.groupingKey = groupingKey;
+    }
+
     @Override
     public void open(MetricConfig config) {
         Properties props = new Properties();
-        String servers = config.getString("servers", "localhost:9092");
-        topic = config.getString("topic", "flink_metrics");
+//        String servers = config.getString("servers", "localhost:9092");
+//        topic = config.getString("topic", "flink_metrics");
         props.put("bootstrap.servers", servers);
 //        props.put("acks", "all");
         props.put("delivery.timeout.ms", 5000);
@@ -164,12 +177,16 @@ public class KafkaMetricReporter implements MetricReporter, Scheduled {
         });
     }
 
-    private static String getScopedName(String metricName, MetricGroup group) {
-        return ((FrontMetricGroup<AbstractMetricGroup<?>>) group)
-                .getLogicalScope(CHARACTER_FILTER, SCOPE_SEPARATOR) + SCOPE_SEPARATOR + metricName;
+    private String getScopedName(String metricName, MetricGroup group) {
+        String logicalScope = ((FrontMetricGroup<AbstractMetricGroup<?>>) group)
+                .getLogicalScope(CHARACTER_FILTER, SCOPE_SEPARATOR);
+        return SCOPE_PREFIX
+                + logicalScope
+                + SCOPE_SEPARATOR
+                + CHARACTER_FILTER.filterCharacters(metricName);
     }
 
-    private static Map<String, String> getTags(MetricGroup group) {
+    private Map<String, String> getTags(MetricGroup group) {
         // Keys are surrounded by brackets: remove them, transforming "<name>" to "name".
         Map<String, String> tags = new HashMap<>();
         for (Map.Entry<String, String> variable : group.getAllVariables().entrySet()) {
@@ -179,6 +196,7 @@ public class KafkaMetricReporter implements MetricReporter, Scheduled {
                 tags.put(name.substring(1, name.length() - 1), variable.getValue());
             }
         }
+        tags.putAll(groupingKey);
         return tags;
     }
 

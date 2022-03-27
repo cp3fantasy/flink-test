@@ -18,13 +18,15 @@ import java.util.Properties;
 public class PvStreamTest {
 
 	public static void main(String[] args) throws Exception {
+		System.out.println("test");
 		final ObjectMapper mapper = new ObjectMapper();
 		Configuration configuration = new Configuration();
 //		configuration.setString("metrics.reporters","console_reporter");
 //		configuration.setString("metrics.reporter.console_reporter.factory.class","com.zz.flink.metrics.ConsoleMetricReporterFactory");
 		configuration.setString("metrics.reporters","kafka_reporter");
-		configuration.setString("metrics.reporter.kafka_reporter.factory.class","com.zz.flink.metrics.KafkaMetricReporterFactory");
+		configuration.setString("metrics.reporter.kafka_reporter.factory.class","com.paic.flink.metrics.KafkaMetricReporterFactory");
 		configuration.setString("metrics.reporter.kafka_reporter.interval","10 SECONDS");
+		configuration.setString("metrics.reporter.kafka_reporter.groupingKey","scenaioId=1;requestId=100");
 		configuration.setInteger("taskmanager.cpu.cores",2);
 		final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment(configuration);
 		Properties properties = new Properties();

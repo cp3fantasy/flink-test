@@ -31,8 +31,8 @@
         <module>cdc</module>
 <!--        <module>hudi</module>-->
         <module>es</module>
-        <module>metrics</module>
-        <module>metrics-job</module>
+<!--        <module>metrics-job</module>-->
+        <module>flink-metrics-kafka</module>
     </modules>
 
     <dependencies>

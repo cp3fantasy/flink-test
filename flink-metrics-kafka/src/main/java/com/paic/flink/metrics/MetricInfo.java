@@ -1,4 +1,4 @@
-package com.zz.flink.metrics;
+package com.paic.flink.metrics;
 
 import com.alibaba.fastjson.JSON;
 
