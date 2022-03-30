@@ -10,9 +10,12 @@ import java.util.Map;
 
 public class DynamicMapFunction extends RichFlatMapFunction<Map<String, Object>, RichData> {
 
+    private transient String timeField;
+
 
     @Override
     public void open(Configuration parameters) throws Exception {
+        this.timeField = "startTime";
     }
 
     @Override
@@ -25,6 +28,7 @@ public class DynamicMapFunction extends RichFlatMapFunction<Map<String, Object>,
             richData.setData(data);
             richData.setKey(groupValue);
             richData.setRuleIds(getRuleIds(entry.getValue()));
+            richData.setEventTime((Long) data.get(timeField));
             out.collect(richData);
         }
     }

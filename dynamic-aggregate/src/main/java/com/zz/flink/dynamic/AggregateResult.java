@@ -4,11 +4,21 @@ import com.alibaba.fastjson.JSON;
 
 public class AggregateResult {
 
+    private int ruleId;
+
     private String windowTime;
 
     private String key;
 
     private Object value;
+
+    public int getRuleId() {
+        return ruleId;
+    }
+
+    public void setRuleId(int ruleId) {
+        this.ruleId = ruleId;
+    }
 
     public String getWindowTime() {
         return windowTime;

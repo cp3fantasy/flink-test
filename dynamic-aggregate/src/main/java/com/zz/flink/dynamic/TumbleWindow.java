@@ -1,14 +1,31 @@
 package com.zz.flink.dynamic;
 
-public class TumbleWindow extends TimeWindow{
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+public class TumbleWindow implements TimeWindow {
 
     private int size;
 
-    public int getSize() {
-        return size;
+    private TimeUnit timeUnit;
+
+    private long sizeInMillis;
+
+    public TumbleWindow(int size, TimeUnit timeUnit) {
+        this.size = size;
+        this.timeUnit = timeUnit;
+        this.sizeInMillis = timeUnit.toMillis(size);
     }
 
-    public void setSize(int size) {
-        this.size = size;
+    @Override
+    public List<Long> assignWindows(long eventTime) {
+        long startTime = eventTime / sizeInMillis * sizeInMillis;
+        return Collections.singletonList(startTime);
+    }
+
+    @Override
+    public long getSizeInMillis() {
+        return sizeInMillis;
     }
 }

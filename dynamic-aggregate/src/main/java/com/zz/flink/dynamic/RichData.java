@@ -9,6 +9,8 @@ public class RichData {
 
     private String key;
 
+    private long eventTime;
+
     private List<Integer> ruleIds;
 
     public Map<String, Object> getData() {
@@ -25,6 +27,14 @@ public class RichData {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public long getEventTime() {
+        return eventTime;
+    }
+
+    public void setEventTime(long eventTime) {
+        this.eventTime = eventTime;
     }
 
     public List<Integer> getRuleIds() {

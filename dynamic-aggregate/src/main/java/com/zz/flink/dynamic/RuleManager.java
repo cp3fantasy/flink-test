@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 public class RuleManager {
@@ -24,17 +25,26 @@ public class RuleManager {
         rule.setId(1);
         rule.setGroupKey("pageId");
         rule.setAggregatorType("count");
+        rule.setWindow(new TumbleWindow(10, TimeUnit.SECONDS));
         addRule(rule);
         rule = new Rule();
         rule.setId(2);
         rule.setGroupKey("pageId");
         rule.setAggregatorType("sum");
         rule.setAggregatorField("duration");
+        rule.setWindow(new TumbleWindow(10, TimeUnit.SECONDS));
         addRule(rule);
         rule = new Rule();
         rule.setId(3);
         rule.setGroupKey("userId");
         rule.setAggregatorType("count");
+        rule.setWindow(new TumbleWindow(10, TimeUnit.SECONDS));
+        addRule(rule);
+        rule = new Rule();
+        rule.setId(4);
+        rule.setGroupKey("userId");
+        rule.setAggregatorType("count");
+        rule.setWindow(new TumbleWindow(30, TimeUnit.SECONDS));
         addRule(rule);
     }
 
