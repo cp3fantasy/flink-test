@@ -56,7 +56,9 @@ public class PageViewFixedSpeedSimulator {
                 pageView.setUserId(user);
                 pageView.setPageId(pageIds[count % pageIds.length]);
                 pageView.setStartTime(System.currentTimeMillis());
-                pageView.setEndTime(pageView.getStartTime() + new Random().nextInt(1000));
+                int duration = new Random().nextInt(1000);
+                pageView.setDuration(duration);
+                pageView.setEndTime(pageView.getStartTime() + duration);
                 System.out.println(pageView);
                 if (handler != null) {
                     handler.handle(pageView);

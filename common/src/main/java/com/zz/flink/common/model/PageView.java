@@ -12,6 +12,8 @@ public class PageView {
 
     private long endTime;
 
+    private int duration;
+
     public String getSeqNo() {
         return seqNo;
     }
@@ -52,6 +54,14 @@ public class PageView {
         this.endTime = endTime;
     }
 
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
     @Override
     public String toString() {
         return "PageView{" +
@@ -60,7 +70,7 @@ public class PageView {
                 ", userId='" + userId + '\'' +
                 ", startTime=" + startTime +
                 ", endTime=" + endTime +
+                ", duration=" + duration +
                 '}';
     }
-
 }

@@ -33,6 +33,7 @@
         <module>es</module>
 <!--        <module>metrics-job</module>-->
         <module>flink-metrics-kafka</module>
+        <module>dynamic-aggregate</module>
     </modules>
 
     <dependencies>
