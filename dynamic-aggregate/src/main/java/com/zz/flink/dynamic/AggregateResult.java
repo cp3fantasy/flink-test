@@ -6,6 +6,8 @@ public class AggregateResult {
 
     private int ruleId;
 
+    private String metric;
+
     private String windowTime;
 
     private String key;
@@ -18,6 +20,14 @@ public class AggregateResult {
 
     public void setRuleId(int ruleId) {
         this.ruleId = ruleId;
+    }
+
+    public String getMetric() {
+        return metric;
+    }
+
+    public void setMetric(String metric) {
+        this.metric = metric;
     }
 
     public String getWindowTime() {

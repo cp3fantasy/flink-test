@@ -1,5 +1,6 @@
 package com.zz.flink.dynamic;
 
+import com.googlecode.aviator.AviatorEvaluator;
 import org.apache.flink.api.common.state.MapState;
 import org.apache.flink.api.common.state.MapStateDescriptor;
 import org.apache.flink.api.common.typeinfo.TypeHint;
@@ -10,21 +11,18 @@ import org.apache.flink.util.Collector;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DynamicWindowAggregateFunction extends KeyedProcessFunction<String, RichData, AggregateResult> {
 
-    private transient MapState<AggregatorKey, Aggregator> state;
+    private transient MapState<AggregatorKey, List<Aggregator>> state;
 
-    private MapStateDescriptor<AggregatorKey, Aggregator> stateDescriptor =
+    private MapStateDescriptor<AggregatorKey, List<Aggregator>> stateDescriptor =
             new MapStateDescriptor<>(
                     "windowState",
                     TypeInformation.of(new TypeHint<AggregatorKey>() {
                     }),
-                    TypeInformation.of(new TypeHint<Aggregator>() {
+                    TypeInformation.of(new TypeHint<List<Aggregator>>() {
                     }));
 
     private transient DateFormat dateFormat;
@@ -45,6 +43,27 @@ public class DynamicWindowAggregateFunction extends KeyedProcessFunction<String,
         }
     }
 
+    private void processRule(RichData richData, Rule rule, Context ctx) throws Exception {
+        TimeWindow window = rule.getWindow();
+        List<Long> windowStartTimes = window.assignWindows(richData.getEventTime());
+        for (long windowStartTime : windowStartTimes) {
+            AggregatorKey aggregatorKey = new AggregatorKey();
+            aggregatorKey.setRuleId(rule.getId());
+            aggregatorKey.setWindowStartTime(windowStartTime);
+            List<Aggregator> aggregators = state.get(aggregatorKey);
+            if (aggregators == null) {
+                aggregators = createAggregators(rule);
+                state.put(aggregatorKey, aggregators);
+                long emitTime = getEmitTime(windowStartTime, window);
+                ctx.timerService().registerEventTimeTimer(emitTime);
+            }
+            for (Aggregator aggregator : aggregators) {
+                aggregator.aggregate(richData.getData());
+            }
+        }
+    }
+
+
     @Override
     public void onTimer(long timestamp, OnTimerContext ctx, Collector<AggregateResult> out) throws Exception {
         List<AggregatorKey> keysToRemove = new ArrayList<>();
@@ -54,14 +73,37 @@ public class DynamicWindowAggregateFunction extends KeyedProcessFunction<String,
             if (rule != null) {
                 long emitTime = getEmitTime(aggregatorKey.getWindowStartTime(), rule.getWindow());
                 if (emitTime == timestamp) {
-                    AggregateResult aggregateResult = new AggregateResult();
-                    aggregateResult.setRuleId(ruleId);
-                    aggregateResult.setKey(ctx.getCurrentKey());
-                    aggregateResult.setValue(state.get(aggregatorKey).getResult());
-                    aggregateResult.setWindowTime(dateFormat.format(aggregatorKey.getWindowStartTime()));
-                    out.collect(aggregateResult);
                     keysToRemove.add(aggregatorKey);
+                    List<Aggregator> aggregators = state.get(aggregatorKey);
+                    List<MetricInfo> basicMetrics = rule.getBasicMetrics();
+                    List<MetricInfo> exprMetrics = rule.getExprMetrics();
+                    Map<String, Object> env = null;
+                    if (exprMetrics.size() > 0) {
+                        env = new HashMap<>();
+                    }
+                    for (int i = 0; i < basicMetrics.size(); i++) {
+                        Aggregator aggregator = aggregators.get(i);
+                        Object result = aggregator.getResult();
+                        MetricInfo metricInfo = basicMetrics.get(i);
+                        if (metricInfo.isOutput()) {
+                            out.collect(buildResult(ruleId, metricInfo.getName(), ctx.getCurrentKey(),
+                                    aggregatorKey.getWindowStartTime(), result));
+                        }
+                        if (env != null) {
+                            env.put(metricInfo.getName(), result);
+                        }
+                    }
+                    for (MetricInfo metricInfo : rule.getExprMetrics()) {
+                        Object result = AviatorEvaluator.execute(metricInfo.getExpr(), env, true);
+                        env.put(metricInfo.getName(), result);
+                        if (metricInfo.isOutput()) {
+                            out.collect(buildResult(ruleId, metricInfo.getName(), ctx.getCurrentKey(),
+                                    aggregatorKey.getWindowStartTime(), result));
+                        }
+                    }
                 }
+            } else {
+                keysToRemove.add(aggregatorKey);
             }
         }
         for (AggregatorKey key : keysToRemove) {
@@ -69,32 +111,36 @@ public class DynamicWindowAggregateFunction extends KeyedProcessFunction<String,
         }
     }
 
-    private void processRule(RichData richData, Rule rule, Context ctx) throws Exception {
-        TimeWindow window = rule.getWindow();
-        List<Long> windowStartTimes = window.assignWindows(richData.getEventTime());
-        for (long windowStartTime : windowStartTimes) {
-            AggregatorKey aggregatorKey = new AggregatorKey();
-            aggregatorKey.setRuleId(rule.getId());
-            aggregatorKey.setWindowStartTime(windowStartTime);
-            Aggregator aggregator = state.get(aggregatorKey);
-            if (aggregator == null) {
-                aggregator = createAggregator(rule);
-                state.put(aggregatorKey, aggregator);
-                long emitTime = getEmitTime(windowStartTime, window);
-                ctx.timerService().registerEventTimeTimer(emitTime);
-            }
-            aggregator.aggregate(richData.getData());
-        }
+    private AggregateResult buildResult(int ruleId, String metricName, String currentKey, long windowStartTime, Object result) {
+        AggregateResult aggregateResult = new AggregateResult();
+        aggregateResult.setRuleId(ruleId);
+        aggregateResult.setMetric(metricName);
+        aggregateResult.setKey(currentKey);
+        aggregateResult.setWindowTime(dateFormat.format(windowStartTime));
+        aggregateResult.setValue(result);
+        return aggregateResult;
     }
 
     private long getEmitTime(long windowStartTime, TimeWindow window) {
         return windowStartTime + window.getSizeInMillis();
     }
 
-    private Aggregator createAggregator(Rule rule) {
-        String type = rule.getAggregatorType();
+    private List<Aggregator> createAggregators(Rule rule) {
+        List<MetricInfo> metricInfos = rule.getBasicMetrics();
+        if (metricInfos.size() == 1) {
+            return Collections.singletonList(createAggregator(metricInfos.get(0)));
+        }
+        List<Aggregator> aggregators = new ArrayList<>(metricInfos.size());
+        for (MetricInfo metricInfo : metricInfos) {
+            aggregators.add(createAggregator(metricInfo));
+        }
+        return aggregators;
+    }
+
+    private Aggregator createAggregator(MetricInfo metricInfo) {
+        String type = metricInfo.getType();
         if (type.equals("sum")) {
-            return new SumAggregator(rule.getAggregatorField());
+            return new SumAggregator(metricInfo.getExpr());
         } else {
             return new CountAggregator();
         }

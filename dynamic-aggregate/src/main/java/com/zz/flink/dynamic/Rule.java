@@ -1,5 +1,8 @@
 package com.zz.flink.dynamic;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Rule {
 
     private int id;
@@ -8,11 +11,11 @@ public class Rule {
 
     private String filterExpr;
 
-    private String aggregatorType;
-
-    private String aggregatorField;
-
     private TimeWindow window;
+
+    private List<MetricInfo> basicMetrics = new ArrayList<>();
+
+    private List<MetricInfo> exprMetrics = new ArrayList<>();
 
     public int getId() {
         return id;
@@ -38,21 +41,22 @@ public class Rule {
         this.filterExpr = filterExpr;
     }
 
-    public String getAggregatorType() {
-        return aggregatorType;
+    public List<MetricInfo> getBasicMetrics() {
+        return basicMetrics;
     }
 
-    public void setAggregatorType(String aggregatorType) {
-        this.aggregatorType = aggregatorType;
+    public List<MetricInfo> getExprMetrics() {
+        return exprMetrics;
     }
 
-    public String getAggregatorField() {
-        return aggregatorField;
+    public void addMetric(MetricInfo metricInfo) {
+        if (metricInfo.getType().equals("expr")) {
+            exprMetrics.add(metricInfo);
+        } else {
+            basicMetrics.add(metricInfo);
+        }
     }
 
-    public void setAggregatorField(String aggregatorField) {
-        this.aggregatorField = aggregatorField;
-    }
 
     public TimeWindow getWindow() {
         return window;
