@@ -44,6 +44,7 @@ public class RuleManager {
         Rule rule = new Rule();
         rule.setId(5);
         rule.setGroupKey("userId");
+        rule.setFilter("duration>500");
         rule.setWindow(new SlideWindow(30, 10, TimeUnit.SECONDS));
         rule.addMetric(MetricInfo.count("count_by_user_30s_10s"));
         rule.addMetric(MetricInfo.sum("duration_sum_by_user_30s_10s", "duration"));

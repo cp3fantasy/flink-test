@@ -1,6 +1,7 @@
 package com.zz.flink.dynamic;
 
 import com.googlecode.aviator.AviatorEvaluator;
+import com.googlecode.aviator.Expression;
 
 import java.util.Map;
 
@@ -8,13 +9,10 @@ public class SumAggregator implements Aggregator {
 
     private double sum;
 
-    private String expr;
+    private Expression expression;
 
-    public SumAggregator(String expr) {
-        this.expr = expr;
-    }
-
-    public SumAggregator() {
+    public SumAggregator(Expression expression) {
+        this.expression = expression;
     }
 
     public double getSum() {
@@ -25,17 +23,9 @@ public class SumAggregator implements Aggregator {
         this.sum = sum;
     }
 
-    public String getExpr() {
-        return expr;
-    }
-
-    public void setExpr(String expr) {
-        this.expr = expr;
-    }
-
     @Override
     public void aggregate(Map<String, Object> data) {
-        Object value = AviatorEvaluator.execute(expr, data, true);
+        Object value = expression.execute(data);
         if (value != null) {
             sum += Double.parseDouble(value.toString());
         }

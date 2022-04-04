@@ -94,7 +94,7 @@ public class DynamicWindowAggregateFunction extends KeyedProcessFunction<String,
                         }
                     }
                     for (MetricInfo metricInfo : rule.getExprMetrics()) {
-                        Object result = AviatorEvaluator.execute(metricInfo.getExpr(), env, true);
+                        Object result = metricInfo.getExpression().execute(env);
                         env.put(metricInfo.getName(), result);
                         if (metricInfo.isOutput()) {
                             out.collect(buildResult(ruleId, metricInfo.getName(), ctx.getCurrentKey(),
@@ -140,7 +140,7 @@ public class DynamicWindowAggregateFunction extends KeyedProcessFunction<String,
     private Aggregator createAggregator(MetricInfo metricInfo) {
         String type = metricInfo.getType();
         if (type.equals("sum")) {
-            return new SumAggregator(metricInfo.getExpr());
+            return new SumAggregator(metricInfo.getExpression());
         } else {
             return new CountAggregator();
         }

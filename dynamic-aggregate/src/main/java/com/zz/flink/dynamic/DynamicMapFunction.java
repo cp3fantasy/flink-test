@@ -1,5 +1,7 @@
 package com.zz.flink.dynamic;
 
+import com.googlecode.aviator.AviatorEvaluator;
+import com.googlecode.aviator.Expression;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.util.Collector;
@@ -27,16 +29,23 @@ public class DynamicMapFunction extends RichFlatMapFunction<Map<String, Object>,
             RichData richData = new RichData();
             richData.setData(data);
             richData.setKey(groupValue);
-            richData.setRuleIds(getRuleIds(entry.getValue()));
+            richData.setRuleIds(getRuleIds(data, entry.getValue()));
             richData.setEventTime((Long) data.get(timeField));
             out.collect(richData);
         }
     }
 
-    private List<Integer> getRuleIds(List<Rule> rules) {
+    private List<Integer> getRuleIds(Map<String, Object> data, List<Rule> rules) {
         List<Integer> ruleIds = new ArrayList<>(rules.size());
         for (Rule rule : rules) {
-            ruleIds.add(rule.getId());
+            Expression filterExpression = rule.getFilterExpression();
+            if (filterExpression != null) {
+                if ((Boolean) filterExpression.execute(data)) {
+                    ruleIds.add(rule.getId());
+                }
+            } else {
+                ruleIds.add(rule.getId());
+            }
         }
         return ruleIds;
     }

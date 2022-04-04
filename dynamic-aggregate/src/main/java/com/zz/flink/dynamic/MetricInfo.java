@@ -1,5 +1,9 @@
 package com.zz.flink.dynamic;
 
+import com.googlecode.aviator.AviatorEvaluator;
+import com.googlecode.aviator.Expression;
+
+
 public class MetricInfo {
 
     private String name;
@@ -7,6 +11,8 @@ public class MetricInfo {
     private String type;
 
     private String expr;
+
+    private Expression expression;
 
     private boolean output = true;
 
@@ -32,6 +38,13 @@ public class MetricInfo {
 
     public void setExpr(String expr) {
         this.expr = expr;
+        if (expr != null) {
+            expression = AviatorEvaluator.compile(expr, true);
+        }
+    }
+
+    public Expression getExpression() {
+        return expression;
     }
 
     public boolean isOutput() {
@@ -64,5 +77,7 @@ public class MetricInfo {
         metricInfo.setExpr(expr);
         return metricInfo;
     }
+
+
 
 }

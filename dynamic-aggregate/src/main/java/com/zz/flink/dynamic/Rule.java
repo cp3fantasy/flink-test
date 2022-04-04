@@ -1,5 +1,8 @@
 package com.zz.flink.dynamic;
 
+import com.googlecode.aviator.AviatorEvaluator;
+import com.googlecode.aviator.Expression;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +12,9 @@ public class Rule {
 
     private String groupKey;
 
-    private String filterExpr;
+    private String filter;
+
+    private Expression filterExpression;
 
     private TimeWindow window;
 
@@ -33,12 +38,15 @@ public class Rule {
         this.groupKey = groupKey;
     }
 
-    public String getFilterExpr() {
-        return filterExpr;
+    public String getFilter() {
+        return filter;
     }
 
-    public void setFilterExpr(String filterExpr) {
-        this.filterExpr = filterExpr;
+    public void setFilter(String filter) {
+        this.filter = filter;
+        if (filter != null) {
+            this.filterExpression = AviatorEvaluator.compile(filter, true);
+        }
     }
 
     public List<MetricInfo> getBasicMetrics() {
@@ -65,4 +73,9 @@ public class Rule {
     public void setWindow(TimeWindow window) {
         this.window = window;
     }
+
+    public Expression getFilterExpression() {
+        return filterExpression;
+    }
+
 }
