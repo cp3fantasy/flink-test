@@ -1,8 +1,8 @@
 package com.zz.flink.dynamic;
 
-import com.googlecode.aviator.AviatorEvaluator;
 import com.googlecode.aviator.Expression;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
+import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.util.Collector;
 
@@ -16,8 +16,11 @@ public class DynamicMapFunction extends RichFlatMapFunction<Map<String, Object>,
 
 
     @Override
-    public void open(Configuration parameters) throws Exception {
-        this.timeField = "startTime";
+    public void open(Configuration config) throws Exception {
+        ParameterTool parameters = (ParameterTool)
+                getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
+        this.timeField = parameters.get("timeField");
+        System.out.println(timeField);
     }
 
     @Override

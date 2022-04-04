@@ -7,6 +7,7 @@ import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.java.functions.KeySelector;
+import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.configuration.RestOptions;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
@@ -20,17 +21,18 @@ import java.util.Properties;
 public class DynamicAggregateTest {
 
     public static void main(String[] args) throws Exception {
+        ParameterTool parameters = ParameterTool.fromArgs(args);
         Configuration config = new Configuration();
         config.setInteger(RestOptions.PORT, 7100);
         StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(config);
+        env.getConfig().setGlobalJobParameters(parameters);
         env.enableCheckpointing(30000);
         Properties properties = new Properties();
-        properties.setProperty("bootstrap.servers", "localhost:9092");
-// only required for Kafka 0.8
-//		properties.setProperty("zookeeper.connect", "localhost:2181");
-        properties.setProperty("group.id", "pvtest");
-
-        FlinkKafkaConsumer<String> consumer = new FlinkKafkaConsumer<>("pv", new SimpleStringSchema(), properties);
+        String servers = parameters.get("servers","localhost:9092");
+        String topic = parameters.get("topic");
+        properties.setProperty("bootstrap.servers", servers);
+        properties.setProperty("group.id", "dynamic-aggregator");
+        FlinkKafkaConsumer<String> consumer = new FlinkKafkaConsumer<>(topic, new SimpleStringSchema(), properties);
         DataStreamSource<String> stream = env.addSource(consumer);
         stream.map(new MapFunction<String, Map<String, Object>>() {
             @Override
