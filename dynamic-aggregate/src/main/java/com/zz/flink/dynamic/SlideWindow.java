@@ -44,5 +44,12 @@ public class SlideWindow implements TimeWindow {
         return sizeInMillis;
     }
 
-
+    @Override
+    public String toString() {
+        return "SlideWindow{" +
+                "size=" + size +
+                ", step=" + step +
+                ", timeUnit=" + timeUnit +
+                '}';
+    }
 }

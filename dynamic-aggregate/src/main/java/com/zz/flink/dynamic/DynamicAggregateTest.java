@@ -27,6 +27,8 @@ public class DynamicAggregateTest {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(config);
         env.getConfig().setGlobalJobParameters(parameters);
         env.enableCheckpointing(30000);
+        String configUrl = parameters.get("configUrl","localhost:8080");
+        RuleManager.init(configUrl);
         Properties properties = new Properties();
         String servers = parameters.get("servers","localhost:9092");
         String topic = parameters.get("topic");

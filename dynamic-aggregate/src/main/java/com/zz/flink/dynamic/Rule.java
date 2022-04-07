@@ -1,5 +1,6 @@
 package com.zz.flink.dynamic;
 
+import com.alibaba.fastjson.JSON;
 import com.googlecode.aviator.AviatorEvaluator;
 import com.googlecode.aviator.Expression;
 
@@ -78,4 +79,13 @@ public class Rule {
         return filterExpression;
     }
 
+    @Override
+    public String toString() {
+        return "Rule{" +
+                "id=" + id +
+                ", groupKey='" + groupKey + '\'' +
+                ", filter='" + filter + '\'' +
+                ", window=" + window +
+                '}';
+    }
 }

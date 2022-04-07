@@ -28,4 +28,12 @@ public class TumbleWindow implements TimeWindow {
     public long getSizeInMillis() {
         return sizeInMillis;
     }
+
+    @Override
+    public String toString() {
+        return "TumbleWindow{" +
+                "size=" + size +
+                ", timeUnit=" + timeUnit +
+                '}';
+    }
 }
