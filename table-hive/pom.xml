@@ -64,7 +64,8 @@
             <artifactId>flink-orc_${scala.binary.version}</artifactId>
         </dependency>
 
-    </dependencies> <build>
+    </dependencies>
+    <build>
     <plugins>
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>

@@ -6,6 +6,7 @@ import org.apache.flink.table.api.SqlDialect;
 import org.apache.flink.table.api.TableResult;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.apache.flink.table.catalog.hive.HiveCatalog;
+import org.apache.hadoop.conf.Configuration;
 
 public class BigHiveTableTest {
 
@@ -20,6 +21,7 @@ public class BigHiveTableTest {
         String hiveConfDir = "/Users/zhuozhang/develop/apache-hive-2.3.5-bin/conf"; // a local path
 
         HiveCatalog hive = new HiveCatalog(name, defaultDatabase, hiveConfDir);
+
         tEnv.registerCatalog("myhive", hive);
         String createTable = createBigTable("big_source", 11);
 //        System.out.println(createTable);

@@ -72,7 +72,7 @@ public class PageViewFixedSpeedSimulator {
     }
 
     public static void main(String[] args) {
-        new PageViewFixedSpeedSimulator(2, 5, 10).start();
+        new PageViewFixedSpeedSimulator(3, 5).start();
     }
 
 }

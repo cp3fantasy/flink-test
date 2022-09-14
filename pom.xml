@@ -25,15 +25,18 @@
         <module>common</module>
         <module>streaming</module>
         <module>table</module>
-<!--        <module>hive</module>-->
+        <!--        <module>hive</module>-->
         <module>table-hive</module>
         <module>rocketmq</module>
         <module>cdc</module>
-<!--        <module>hudi</module>-->
+        <!--        <module>hudi</module>-->
         <module>es</module>
-<!--        <module>metrics-job</module>-->
+        <!--        <module>metrics-job</module>-->
         <module>flink-metrics-kafka</module>
         <module>dynamic-aggregate</module>
+        <module>udf</module>
+        <module>admin</module>
+        <module>iceberg</module>
     </modules>
 
     <dependencies>
@@ -77,6 +80,14 @@
             <version>${flink.version}</version>
             <scope>provided</scope>
         </dependency>
+
+        <!--        <dependency>-->
+        <!--            <groupId>org.apache.flink</groupId>-->
+        <!--            <artifactId>flink-table-planner_${scala.binary.version}</artifactId>-->
+        <!--            <version>${flink.version}</version>-->
+        <!--            <scope>provided</scope>-->
+        <!--        </dependency>-->
+
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-streaming-scala_${scala.binary.version}</artifactId>
@@ -94,6 +105,7 @@
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-json</artifactId>
             <version>${flink.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -102,11 +114,6 @@
             <version>2.9.4</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-connector-kafka_${scala.binary.version}</artifactId>
-            <version>${flink.version}</version>
-        </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.apache.flink/flink-statebackend-rocksdb -->
         <dependency>
@@ -140,18 +147,21 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-slf4j-impl</artifactId>
             <version>${log4j.version}</version>
+            <scope>provided</scope>
             <!--            <scope>runtime</scope>-->
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
             <version>${log4j.version}</version>
+            <scope>provided</scope>
             <!--            <scope>runtime</scope>-->
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <version>${log4j.version}</version>
+            <scope>provided</scope>
             <!--            <scope>runtime</scope>-->
         </dependency>
 
@@ -172,6 +182,13 @@
 
     <dependencyManagement>
         <dependencies>
+
+            <dependency>
+                <groupId>org.apache.flink</groupId>
+                <artifactId>flink-connector-kafka_${scala.binary.version}</artifactId>
+                <version>${flink.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.example</groupId>
                 <artifactId>common</artifactId>

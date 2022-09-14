@@ -1,0 +1,178 @@
+{
+  "jid": "fec7288f9a149ec53a20f917996da068",
+  "name": "insert-into_default_catalog.default_database.pv_user",
+  "isStoppable": false,
+  "state": "RUNNING",
+  "start-time": 1657866459643,
+  "end-time": -1,
+  "duration": 61073,
+  "maxParallelism": -1,
+  "now": 1657866520716,
+  "timestamps": {
+    "RUNNING": 1657866461999,
+    "RESTARTING": 0,
+    "CANCELLING": 0,
+    "FAILED": 0,
+    "CANCELED": 0,
+    "RECONCILING": 0,
+    "INITIALIZING": 1657866459643,
+    "SUSPENDED": 0,
+    "FAILING": 0,
+    "FINISHED": 0,
+    "CREATED": 1657866459923
+  },
+  "vertices": [
+    {
+      "id": "cbc357ccb763df2852fee8c4fc7d55f2",
+      "name": "Source: TableSourceScan(table=[[default_catalog, default_database, pv, watermark=[TO_TIMESTAMP(FROM_UNIXTIME(/($2, 1000)))]]], fields=[pageId, userId, startTime]) -> Calc(select=[pageId, userId, Reinterpret(TO_TIMESTAMP(FROM_UNIXTIME((startTime / 1000)))) AS ts])",
+      "maxParallelism": 128,
+      "parallelism": 2,
+      "status": "INITIALIZING",
+      "start-time": 1657866462406,
+      "end-time": -1,
+      "duration": 58310,
+      "tasks": {
+        "FINISHED": 0,
+        "CANCELING": 0,
+        "CREATED": 0,
+        "DEPLOYING": 0,
+        "RUNNING": 0,
+        "CANCELED": 0,
+        "FAILED": 0,
+        "RECONCILING": 0,
+        "INITIALIZING": 2,
+        "SCHEDULED": 0
+      },
+      "metrics": {
+        "read-bytes": 0,
+        "read-bytes-complete": true,
+        "write-bytes": 0,
+        "write-bytes-complete": true,
+        "read-records": 0,
+        "read-records-complete": true,
+        "write-records": 0,
+        "write-records-complete": true
+      }
+    },
+    {
+      "id": "6cdc5bb954874d922eaee11a8e7b5dd5",
+      "name": "Source: TableSourceScan(table=[[default_catalog, default_database, user_info]], fields=[id, userId, level, update_time]) -> DropUpdateBefore -> WatermarkAssigner(rowtime=[update_time], watermark=[update_time]) -> Calc(select=[userId, level, update_time])",
+      "maxParallelism": 128,
+      "parallelism": 2,
+      "status": "RUNNING",
+      "start-time": 1657866462424,
+      "end-time": -1,
+      "duration": 58292,
+      "tasks": {
+        "FINISHED": 0,
+        "CANCELING": 0,
+        "CREATED": 0,
+        "DEPLOYING": 0,
+        "RUNNING": 2,
+        "CANCELED": 0,
+        "FAILED": 0,
+        "RECONCILING": 0,
+        "INITIALIZING": 0,
+        "SCHEDULED": 0
+      },
+      "metrics": {
+        "read-bytes": 0,
+        "read-bytes-complete": true,
+        "write-bytes": 0,
+        "write-bytes-complete": true,
+        "read-records": 0,
+        "read-records-complete": true,
+        "write-records": 8,
+        "write-records-complete": true
+      }
+    },
+    {
+      "id": "9b292e94298dd6ba47492a59dffbd251",
+      "name": "TemporalJoin(joinType=[LeftOuterJoin], where=[((userId = userId0) AND __TEMPORAL_JOIN_CONDITION(ts, update_time, __TEMPORAL_JOIN_CONDITION_PRIMARY_KEY(userId0), __TEMPORAL_JOIN_LEFT_KEY(userId), __TEMPORAL_JOIN_RIGHT_KEY(userId0)))], select=[pageId, userId, ts, userId0, level, update_time]) -> Calc(select=[pageId, userId, level, ts]) -> Sink: Sink(table=[default_catalog.default_database.pv_user], fields=[pageId, userId, level, ts])",
+      "maxParallelism": 128,
+      "parallelism": 2,
+      "status": "RUNNING",
+      "start-time": 1657866462426,
+      "end-time": -1,
+      "duration": 58290,
+      "tasks": {
+        "FINISHED": 0,
+        "CANCELING": 0,
+        "CREATED": 0,
+        "DEPLOYING": 0,
+        "RUNNING": 2,
+        "CANCELED": 0,
+        "FAILED": 0,
+        "RECONCILING": 0,
+        "INITIALIZING": 0,
+        "SCHEDULED": 0
+      },
+      "metrics": {
+        "read-bytes": 412,
+        "read-bytes-complete": true,
+        "write-bytes": 0,
+        "write-bytes-complete": true,
+        "read-records": 8,
+        "read-records-complete": true,
+        "write-records": 0,
+        "write-records-complete": true
+      }
+    }
+  ],
+  "status-counts": {
+    "FINISHED": 0,
+    "CANCELING": 0,
+    "CREATED": 0,
+    "DEPLOYING": 0,
+    "RUNNING": 2,
+    "CANCELED": 0,
+    "FAILED": 0,
+    "RECONCILING": 0,
+    "INITIALIZING": 1,
+    "SCHEDULED": 0
+  },
+  "plan": {
+    "jid": "fec7288f9a149ec53a20f917996da068",
+    "name": "insert-into_default_catalog.default_database.pv_user",
+    "nodes": [
+      {
+        "id": "9b292e94298dd6ba47492a59dffbd251",
+        "parallelism": 2,
+        "operator": "",
+        "operator_strategy": "",
+        "description": "TemporalJoin(joinType=[LeftOuterJoin], where=[((userId = userId0) AND __TEMPORAL_JOIN_CONDITION(ts, update_time, __TEMPORAL_JOIN_CONDITION_PRIMARY_KEY(userId0), __TEMPORAL_JOIN_LEFT_KEY(userId), __TEMPORAL_JOIN_RIGHT_KEY(userId0)))], select=[pageId, userId, ts, userId0, level, update_time]) -&gt; Calc(select=[pageId, userId, level, ts]) -&gt; Sink: Sink(table=[default_catalog.default_database.pv_user], fields=[pageId, userId, level, ts])",
+        "inputs": [
+          {
+            "num": 0,
+            "id": "cbc357ccb763df2852fee8c4fc7d55f2",
+            "ship_strategy": "HASH",
+            "exchange": "pipelined_bounded"
+          },
+          {
+            "num": 1,
+            "id": "6cdc5bb954874d922eaee11a8e7b5dd5",
+            "ship_strategy": "HASH",
+            "exchange": "pipelined_bounded"
+          }
+        ],
+        "optimizer_properties": {}
+      },
+      {
+        "id": "cbc357ccb763df2852fee8c4fc7d55f2",
+        "parallelism": 2,
+        "operator": "",
+        "operator_strategy": "",
+        "description": "Source: TableSourceScan(table=[[default_catalog, default_database, pv, watermark=[TO_TIMESTAMP(FROM_UNIXTIME(/($2, 1000)))]]], fields=[pageId, userId, startTime]) -&gt; Calc(select=[pageId, userId, Reinterpret(TO_TIMESTAMP(FROM_UNIXTIME((startTime / 1000)))) AS ts])",
+        "optimizer_properties": {}
+      },
+      {
+        "id": "6cdc5bb954874d922eaee11a8e7b5dd5",
+        "parallelism": 2,
+        "operator": "",
+        "operator_strategy": "",
+        "description": "Source: TableSourceScan(table=[[default_catalog, default_database, user_info]], fields=[id, userId, level, update_time]) -&gt; DropUpdateBefore -&gt; WatermarkAssigner(rowtime=[update_time], watermark=[update_time]) -&gt; Calc(select=[userId, level, update_time])",
+        "optimizer_properties": {}
+      }
+    ]
+  }
+}

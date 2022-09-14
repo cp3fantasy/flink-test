@@ -1,6 +1,5 @@
 package com.zz.flink.dynamic;
 
-import com.googlecode.aviator.AviatorEvaluator;
 import org.apache.flink.api.common.state.MapState;
 import org.apache.flink.api.common.state.MapStateDescriptor;
 import org.apache.flink.api.common.typeinfo.TypeHint;
@@ -141,8 +140,11 @@ public class DynamicWindowAggregateFunction extends KeyedProcessFunction<String,
         String type = metricInfo.getType();
         if (type.equals("sum")) {
             return new SumAggregator(metricInfo.getExpression());
-        } else {
+        } else if(type.equals("count")){
             return new CountAggregator();
+        } else {
+            int n = Integer.parseInt(type.substring(type.indexOf("last")+"last".length()));
+            return new LastAggregator(n,metricInfo.getExpr());
         }
     }
 }

@@ -70,6 +70,14 @@ public class MetricInfo {
         return metricInfo;
     }
 
+    public static MetricInfo last(String name, String field, int n) {
+        MetricInfo metricInfo = new MetricInfo();
+        metricInfo.setName(name);
+        metricInfo.setType("last" + n);
+        metricInfo.setExpr(field);
+        return metricInfo;
+    }
+
     public static MetricInfo expr(String name, String expr) {
         MetricInfo metricInfo = new MetricInfo();
         metricInfo.setName(name);
@@ -77,7 +85,6 @@ public class MetricInfo {
         metricInfo.setExpr(expr);
         return metricInfo;
     }
-
 
 
 }

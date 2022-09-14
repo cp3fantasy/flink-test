@@ -57,6 +57,7 @@ public class RuleManager {
         rule.addMetric(MetricInfo.count("count_by_user_30s"));
         rule.addMetric(MetricInfo.sum("duration_sum_by_user_30s", "duration"));
         rule.addMetric(MetricInfo.expr("duration_avg_by_user_30s", "duration_sum_by_user_30s/count_by_user_30s"));
+        rule.addMetric(MetricInfo.last("last3pageIds_by_user_30s","pageId",3));
         addRule(rule, ruleMap, ruleMapByKey);
         rule = new Rule();
         rule.setId(5);

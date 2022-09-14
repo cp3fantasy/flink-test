@@ -23,15 +23,15 @@ public class DynamicAggregateTest {
     public static void main(String[] args) throws Exception {
         ParameterTool parameters = ParameterTool.fromArgs(args);
         Configuration config = new Configuration();
-        config.setInteger(RestOptions.PORT, 7100);
+        config.setInteger(RestOptions.PORT, 7200);
         StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(config);
         env.getConfig().setGlobalJobParameters(parameters);
-        env.enableCheckpointing(30000);
+        env.enableCheckpointing(20000);
         String configUrl = parameters.get("configUrl","localhost:8080");
         RuleManager.init(configUrl);
         Properties properties = new Properties();
         String servers = parameters.get("servers","localhost:9092");
-        String topic = parameters.get("topic");
+        String topic = parameters.get("topic","pv");
         properties.setProperty("bootstrap.servers", servers);
         properties.setProperty("group.id", "dynamic-aggregator");
         FlinkKafkaConsumer<String> consumer = new FlinkKafkaConsumer<>(topic, new SimpleStringSchema(), properties);

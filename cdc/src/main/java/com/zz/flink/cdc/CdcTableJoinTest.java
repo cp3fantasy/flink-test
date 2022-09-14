@@ -80,7 +80,7 @@ public class CdcTableJoinTest {
 //        tEnv.executeSql(createTable);
 //        statementSet.addInsertSql("insert into user_sink select id,userId,level,update_time from user_info");
 
-        createTable = "create table pv_user(\n" +
+        createTable = "create table pv_user_1(\n" +
                 "    pageId STRING,\n" +
                 "    userId STRING,\n" +
                 "    level INT,\n" +
@@ -90,10 +90,26 @@ public class CdcTableJoinTest {
                 ")";
         System.out.println(createTable);
         tEnv.executeSql(createTable);
-        String sql = "insert into pv_user \n" +
+        String sql = "insert into pv_user_1 \n" +
                 "select pageId,pv.userId,level,ts \n" +
                 "from pv left join user_info FOR SYSTEM_TIME AS OF pv.ts \n" +
-                "on pv.userId=user_info.userId";
+                "on pv.userId=user_info.userId and pv.userId='user1'";
+        System.out.println(sql);
+        statementSet.addInsertSql(sql);
+        createTable = "create table pv_user_2(\n" +
+                "    pageId STRING,\n" +
+                "    userId STRING,\n" +
+                "    level INT,\n" +
+                "    startTime TIMESTAMP(3)\n" +
+                ")with(\n" +
+                " 'connector' = 'print'\n" +
+                ")";
+        System.out.println(createTable);
+        tEnv.executeSql(createTable);
+        sql = "insert into pv_user_2 \n" +
+                "select pageId,pv.userId,level,ts \n" +
+                "from pv left join user_info FOR SYSTEM_TIME AS OF pv.ts \n" +
+                "on pv.userId=user_info.userId and pv.userId='user2'";
         System.out.println(sql);
         statementSet.addInsertSql(sql);
 //        tEnv.executeSql(sql);

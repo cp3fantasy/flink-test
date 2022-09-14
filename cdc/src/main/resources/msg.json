@@ -1,0 +1,32 @@
+{
+  "before": null,
+  "after": {
+    "id": 9,
+    "userId": "xgz",
+    "level": 3,
+    "update_time": 1645183274000,
+    "amount": "CRhOcqAA",
+    "gender": null,
+    "age": null
+  },
+  "source": {
+    "version": "1.5.4.Final",
+    "connector": "mysql",
+    "name": "mysql_binlog_source",
+    "ts_ms": 1652690165017,
+    "snapshot": "false",
+    "db": "flink_test",
+    "sequence": null,
+    "table": "user_info",
+    "server_id": 0,
+    "gtid": null,
+    "file": "",
+    "pos": 0,
+    "row": 0,
+    "thread": null,
+    "query": null
+  },
+  "op": "r",
+  "ts_ms": 1652690165018,
+  "transaction": null
+}

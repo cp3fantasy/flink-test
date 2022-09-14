@@ -52,7 +52,6 @@ public class StreamToTableTest {
         StreamTableEnvironment tEnv = StreamTableEnvironment.create(env, settings);
 //        Schema schema = Schema.newBuilder().column.build();
         Table table = tEnv.fromDataStream(stream);
-        table.executeInsert("pv");
         String createTable = "create table pv(\n" +
                 "    pageId VARCHAR,\n" +
                 "    userId VARCHAR,\n" +

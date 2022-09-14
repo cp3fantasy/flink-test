@@ -9,6 +9,8 @@ import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.sink.filesystem.StreamingFileSink;
 import org.apache.flink.streaming.api.functions.sink.filesystem.rollingpolicies.DefaultRollingPolicy;
+import org.apache.flink.table.api.EnvironmentSettings;
+import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 
 import java.util.concurrent.TimeUnit;
 
@@ -37,18 +39,8 @@ public class CdcStreamTest {
                 // set 4 parallel source tasks
                 .setParallelism(4);
 
-        final StreamingFileSink<String> sink = StreamingFileSink
-                .forRowFormat(new Path("/Users/zhuozhang/data/user_info"), new SimpleStringEncoder<String>("UTF-8"))
-                .withRollingPolicy(
-                        DefaultRollingPolicy.builder()
-                                .withRolloverInterval(TimeUnit.MINUTES.toMillis(1))
-                                .withInactivityInterval(TimeUnit.MINUTES.toMillis(5))
-                                .withMaxPartSize(16 * 1024 * 1024)
-                                .build())
-                .build();
-
         stream.print().setParallelism(1); // use parallelism 1 for sink to keep message ordering
-        stream.addSink(sink);
+//        stream.addSink(sink);
         env.execute("Print MySQL Snapshot + Binlog");
     }
 }

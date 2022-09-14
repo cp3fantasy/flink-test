@@ -19,8 +19,8 @@ public class DynamicMapFunction extends RichFlatMapFunction<Map<String, Object>,
     public void open(Configuration config) throws Exception {
         ParameterTool parameters = (ParameterTool)
                 getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
-        this.timeField = parameters.get("timeField");
-        System.out.println(timeField);
+        this.timeField = parameters.get("timeField","startTime");
+        System.out.println("timeField:"+timeField);
     }
 
     @Override
