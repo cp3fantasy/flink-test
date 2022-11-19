@@ -1,5 +1,6 @@
-package com.zz.flink.dynamic;
+package com.zz.flink.dynamic.rule;
 
+import com.zz.flink.dynamic.TimeWindow;
 import org.apache.flink.api.common.state.MapState;
 import org.apache.flink.api.common.state.MapStateDescriptor;
 import org.apache.flink.api.common.typeinfo.TypeHint;

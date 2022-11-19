@@ -1,4 +1,4 @@
-package com.zz.flink.dynamic;
+package com.zz.flink.dynamic.var;
 
 import java.util.List;
 import java.util.Map;
@@ -11,7 +11,7 @@ public class RichData {
 
     private long eventTime;
 
-    private List<Integer> ruleIds;
+    private List<String> varNames;
 
     public Map<String, Object> getData() {
         return data;
@@ -37,11 +37,11 @@ public class RichData {
         this.eventTime = eventTime;
     }
 
-    public List<Integer> getRuleIds() {
-        return ruleIds;
+    public List<String> getVarNames() {
+        return varNames;
     }
 
-    public void setRuleIds(List<Integer> ruleIds) {
-        this.ruleIds = ruleIds;
+    public void setVarNames(List<String> varNames) {
+        this.varNames = varNames;
     }
 }

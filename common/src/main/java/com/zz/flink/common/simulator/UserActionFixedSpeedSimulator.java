@@ -11,7 +11,7 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class PageViewFixedSpeedSimulator {
+public class UserActionFixedSpeedSimulator {
 
     private AtomicInteger seqNo = new AtomicInteger();
 
@@ -25,14 +25,14 @@ public class PageViewFixedSpeedSimulator {
 
     private PageViewHandler handler;
 
-    public PageViewFixedSpeedSimulator(int userCount, int pageCount, int limit) {
+    public UserActionFixedSpeedSimulator(int userCount, int pageCount, int limit) {
         users = SimulateUtil.createStringArray("user", userCount);
         pageIds = SimulateUtil.createStringArray("page", pageCount);
         timer = new HashedWheelTimer();
         this.limit = limit;
     }
 
-    public PageViewFixedSpeedSimulator(int userCount, int pageCount) {
+    public UserActionFixedSpeedSimulator(int userCount, int pageCount) {
         this(userCount, pageCount, -1);
     }
 
@@ -73,7 +73,7 @@ public class PageViewFixedSpeedSimulator {
     }
 
     public static void main(String[] args) {
-        new PageViewFixedSpeedSimulator(3, 10).start();
+        new UserActionFixedSpeedSimulator(3, 5).start();
     }
 
 }

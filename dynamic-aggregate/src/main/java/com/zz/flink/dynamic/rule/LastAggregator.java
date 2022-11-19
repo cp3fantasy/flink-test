@@ -1,8 +1,6 @@
-package com.zz.flink.dynamic;
+package com.zz.flink.dynamic.rule;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 public class LastAggregator implements Aggregator {

@@ -1,4 +1,7 @@
-package com.zz.flink.dynamic;
+package com.zz.flink.dynamic.rule;
+
+import com.zz.flink.dynamic.SlideWindow;
+import com.zz.flink.dynamic.TumbleWindow;
 
 import java.util.*;
 import java.util.concurrent.Executors;

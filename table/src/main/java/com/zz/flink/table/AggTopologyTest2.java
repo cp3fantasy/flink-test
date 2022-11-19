@@ -1,15 +1,19 @@
 package com.zz.flink.table;
 
 import com.zz.flink.table.udf.GetGenderFunc;
+import org.apache.flink.configuration.Configuration;
+import org.apache.flink.configuration.RestOptions;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.EnvironmentSettings;
 import org.apache.flink.table.api.TableResult;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 
-public class PvTableTest2 {
+public class AggTopologyTest2 {
 
     public static void main(String[] args) {
-        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        Configuration config = new Configuration();
+        config.setInteger(RestOptions.PORT, 7100);
+        StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(config);
         EnvironmentSettings settings =
                 EnvironmentSettings.newInstance().inStreamingMode().useBlinkPlanner().build();
         StreamTableEnvironment tEnv = StreamTableEnvironment.create(env, settings);
@@ -34,13 +38,14 @@ public class PvTableTest2 {
         tEnv.executeSql(createView);
         createTable = "create table duration_stat(\n" +
                 "    gender VARCHAR,\n" +
+                "    cnt BIGINT,\n" +
                 "    duration BIGINT \n" +
 //                "    ts timestamp(3)\n" +
                 ") with (\n" +
                 "    'connector' = 'print'\n" +
                 ")";
         tEnv.executeSql(createTable);
-        TableResult result = tEnv.executeSql("insert into duration_stat select gender,sum(duration) from pv_duration group by gender");
+        TableResult result = tEnv.executeSql("insert into duration_stat(gender,cnt,duration) select gender,count(1),sum(duration) from pv_duration group by gender");
 
         result.print();
     }

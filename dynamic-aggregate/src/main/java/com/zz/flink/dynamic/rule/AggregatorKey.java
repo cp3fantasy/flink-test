@@ -1,4 +1,4 @@
-package com.zz.flink.dynamic;
+package com.zz.flink.dynamic.rule;
 
 import java.util.Objects;
 

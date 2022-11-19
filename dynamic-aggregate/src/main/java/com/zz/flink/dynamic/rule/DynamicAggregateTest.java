@@ -1,8 +1,6 @@
-package com.zz.flink.dynamic;
+package com.zz.flink.dynamic.rule;
 
 import com.alibaba.fastjson.JSON;
-import org.apache.flink.api.common.eventtime.TimestampAssigner;
-import org.apache.flink.api.common.eventtime.TimestampAssignerSupplier;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;

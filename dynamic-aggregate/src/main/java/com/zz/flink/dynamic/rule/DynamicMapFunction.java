@@ -1,4 +1,4 @@
-package com.zz.flink.dynamic;
+package com.zz.flink.dynamic.rule;
 
 import com.googlecode.aviator.Expression;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;

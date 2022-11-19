@@ -1,12 +1,10 @@
-package com.zz.flink.dynamic;
+package com.zz.flink.dynamic.var2;
 
 import com.alibaba.fastjson.JSON;
 
 public class AggregateResult {
 
-    private int ruleId;
-
-    private String metric;
+    private String varName;
 
     private String windowTime;
 
@@ -14,20 +12,12 @@ public class AggregateResult {
 
     private Object value;
 
-    public int getRuleId() {
-        return ruleId;
+    public String getVarName() {
+        return varName;
     }
 
-    public void setRuleId(int ruleId) {
-        this.ruleId = ruleId;
-    }
-
-    public String getMetric() {
-        return metric;
-    }
-
-    public void setMetric(String metric) {
-        this.metric = metric;
+    public void setVarName(String varName) {
+        this.varName = varName;
     }
 
     public String getWindowTime() {
